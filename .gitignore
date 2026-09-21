@@ -1,5 +1,25 @@
+# Java / Maven
+target/
+*.class
+
+# Node / Angular
+node_modules/
+dist/
+.angular/
+coverage/
+
+# Variáveis de ambiente — o exemplo é versionado, o resto não
+.env*
+!.env.example
+
+# IDE
+.idea/
+*.iml
+*.log
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
 # production
 /build
-
-# env files
-.env*

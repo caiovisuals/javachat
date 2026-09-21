@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  jpa:
+    show-sql: false
+
+server:
+  forward-headers-strategy: framework
+
+logging:
+  level:
+    root: INFO
+
+app:
+  jwt:
+    secret: ${JWT_SECRET}

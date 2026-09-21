@@ -1,0 +1,91 @@
+@import 'tailwindcss';
+
+@theme {
+    --color-surface: oklch(99% 0 0);
+    --color-surface-alt: oklch(96.5% 0.005 260);
+    --color-border: oklch(90% 0.008 260);
+    --color-ink: oklch(20% 0.02 260);
+    --color-ink-muted: oklch(52% 0.02 260);
+
+    --color-brand: oklch(62% 0.19 258);
+    --color-brand-hover: oklch(56% 0.19 258);
+    --color-brand-ink: oklch(98% 0.01 258);
+
+    --color-success: oklch(62% 0.16 150);
+    --color-warning: oklch(72% 0.16 75);
+    --color-danger: oklch(58% 0.2 25);
+
+    --radius-bubble: 1rem;
+
+    --font-sans:
+        ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-surface: oklch(19% 0.015 260);
+        --color-surface-alt: oklch(24% 0.018 260);
+        --color-border: oklch(32% 0.02 260);
+        --color-ink: oklch(96% 0.005 260);
+        --color-ink-muted: oklch(70% 0.02 260);
+
+        --color-brand: oklch(70% 0.17 258);
+        --color-brand-hover: oklch(76% 0.16 258);
+        --color-brand-ink: oklch(18% 0.03 258);
+
+        --color-success: oklch(72% 0.16 150);
+        --color-warning: oklch(80% 0.15 75);
+        --color-danger: oklch(68% 0.19 25);
+    }
+}
+
+html {
+    color-scheme: light dark;
+}
+
+body {
+    margin: 0;
+    background-color: var(--color-surface);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+}
+
+@layer components {
+    .card {
+        @apply rounded-2xl border border-border bg-surface-alt p-8 shadow-sm;
+    }
+
+    .label {
+        @apply mb-1.5 block text-sm font-medium text-ink;
+    }
+
+    .field {
+        @apply w-full rounded-lg border border-border bg-surface px-3.5 py-2.5 text-sm text-ink
+            placeholder:text-ink-muted focus:border-brand focus:outline-2 focus:outline-offset-1
+            focus:outline-brand disabled:opacity-60;
+    }
+
+    .field-error {
+        @apply border-danger focus:border-danger focus:outline-danger;
+    }
+
+    .hint-error {
+        @apply mt-1.5 block text-xs text-danger;
+    }
+
+    .btn-primary {
+        @apply w-full rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-brand-ink
+            transition-colors hover:bg-brand-hover focus-visible:outline-2
+            focus-visible:outline-offset-2 focus-visible:outline-brand
+            disabled:cursor-not-allowed disabled:opacity-50;
+    }
+
+    .alert-error {
+        @apply rounded-lg border border-danger/40 bg-danger/10 px-4 py-3 text-sm text-danger;
+    }
+
+    .link {
+        @apply font-medium text-brand underline-offset-4 hover:underline;
+    }
+}

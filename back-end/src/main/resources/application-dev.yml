@@ -1,0 +1,24 @@
+spring:
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+logging:
+  level:
+    com.caiovisuals.javachat: DEBUG
+    org.flywaydb: INFO
+
+app:
+  cors:
+    # Ng serve usa proxy para :8080, então CORS não é necessário no dia a dia
+    allowed-origins: http://localhost:4200
+    
+  jwt:
+    # Só para desenvolvimento. Em produção vem de JWT_SECRET, e é outro.
+    secret: ${JWT_SECRET:desenvolvimento-nao-use-isto-em-producao-32bytes}
+
+  auth:
+    # http://localhost não é contexto seguro: com secure=true o navegador descarta o cookie.
+    secure-cookie: false

@@ -1,0 +1,53 @@
+<main class="flex min-h-dvh items-center justify-center p-6">
+    <section class="w-full max-w-lg rounded-2xl border border-border bg-surface-alt p-8 shadow-sm">
+        <header class="mb-6">
+            <h1 class="mt-1 text-3xl font-bold tracking-tight">JAVACHAT</h1>
+            <p class="mt-2 text-sm text-ink-muted">
+                Chat e calls. Esta tela confirma que o front-end alcança a API.
+            </p>
+        </header>
+        <div class="rounded-xl border border-border bg-surface p-5">
+        @switch (state()) {
+            @case ('checking') {
+                <div class="flex items-center gap-3">
+                    <span class="size-2.5 animate-pulse rounded-full bg-warning"></span>
+                    <span class="text-sm text-ink-muted">Consultando a API</span>
+                </div>
+            }
+            @case ('online') {
+                <div class="flex items-center gap-3">
+                    <span class="size-2.5 rounded-full bg-success"></span>
+                    <span class="text-sm font-medium">API respondendo</span>
+                </div>
+                <dl class="mt-4 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
+                    <dt class="text-ink-muted">Aplicação</dt>
+                    <dd class="font-mono">{{ api()?.application }}</dd>
+                    <dt class="text-ink-muted">Versão</dt>
+                    <dd class="font-mono">{{ api()?.version }}</dd>
+                    <dt class="text-ink-muted">Horário</dt>
+                    <dd class="font-mono">{{ api()?.timestamp | date: 'dd/MM/yyyy HH:mm:ss' }}</dd>
+                </dl>
+            }
+            @case ('offline') {
+                <div class="flex items-center gap-3">
+                    <span class="size-2.5 rounded-full bg-danger"></span>
+                    <span class="text-sm font-medium">API fora do ar</span>
+                </div>
+                <p class="mt-3 text-sm text-ink-muted">
+                    Suba o banco com <code class="font-mono">docker compose up -d</code> e a API com
+                    <code class="font-mono">./mvnw spring-boot:run</code> em
+                    <code class="font-mono">back-end/</code>.
+                </p>
+            }
+        }
+        </div>
+        <button
+            type="button"
+            (click)="check()"
+            [disabled]="state() === 'checking'"
+            class="mt-5 w-full rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-brand-ink transition-colors hover:bg-brand-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:opacity-50"
+        >
+            Verificar novamente
+        </button>
+    </section>
+</main>

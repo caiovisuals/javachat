@@ -7,4 +7,4 @@ Um software simples com um site, um sistema de chat e calls e um serviço simple
 O projeto pretende explorar a construção de um sistema de comunicação em Java, trabalhando conceitos como autenticação, comunicação entre usuários, gerenciamento de sessões e chamadas em tempo real, em contra partida, o projeto tem a finalidade de estudo.
 
 by caiothevisuals<br />
-#java #chat #call #login #software #angular
+#chat #call #login #software #angular #java #springboot #tailwind
