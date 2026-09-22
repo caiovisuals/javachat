@@ -4,7 +4,7 @@ import { Observable } from 'rxjs'
 
 import { environment } from '../../../environments/environment'
 
-/** Resposta de `GET /api/health`. */
+/** Resposta de `GET /api/health` */
 export interface ApiHealth {
     status: string
     application: string

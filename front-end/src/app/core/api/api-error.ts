@@ -18,10 +18,16 @@ const MENSAGENS: Record<string, string> = {
 }
 
 export function apiError(error: unknown): ApiError | null {
-    if (error instanceof HttpErrorResponse && error.error && typeof error.error === 'object') {
-        return error.error as ApiError
+    if (!(error instanceof HttpErrorResponse)) {
+        return null
     }
-    return null
+
+    const body: unknown = error.error
+
+    if (!body || typeof body !== 'object' || typeof (body as ApiError).code !== 'string') {
+        return null
+    }
+    return body as ApiError
 }
 
 export function mensagemDeErro(error: unknown): string {
@@ -33,7 +39,7 @@ export function mensagemDeErro(error: unknown): string {
     return MENSAGENS[body.code] ?? body.message ?? 'Algo deu errado. Tente novamente.'
 }
 
-/** Erros por campo, quando a falha foi de validação. */
+/** Erros por campo, quando a falha foi de validação */
 export function errosDeCampo(error: unknown): Record<string, string> {
     return apiError(error)?.errors ?? {}
 }

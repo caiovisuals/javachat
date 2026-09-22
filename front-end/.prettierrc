@@ -1,11 +1,19 @@
 {
     "printWidth": 100,
     "singleQuote": true,
+    "semi": false,
+    "tabWidth": 4,
     "overrides": [
         {
             "files": "*.html",
             "options": {
                 "parser": "angular"
+            }
+        },
+        {
+            "files": ["*.json", "*.md", "*.yml", "*.yaml"],
+            "options": {
+                "tabWidth": 2
             }
         }
     ]

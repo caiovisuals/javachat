@@ -1,0 +1,94 @@
+<div class="flex h-dvh flex-col overflow-hidden bg-surface text-ink">
+    <header class="flex shrink-0 items-center gap-2 border-b border-border px-4 py-3 sm:px-6">
+        <a routerLink="/" class="mr-2 text-base font-bold tracking-tight">JAVACHAT</a>
+        <nav class="flex items-center gap-1" aria-label="Navegação principal">
+            <a
+                routerLink="/"
+                routerLinkActive="bg-surface-alt text-ink"
+                [routerLinkActiveOptions]="{ exact: true }"
+                class="flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm text-ink-muted transition-colors hover:bg-surface-alt"
+            >
+                <app-icon name="home" />
+                <span class="hidden sm:inline">Início</span>
+            </a>
+            <a
+                routerLink="/chats"
+                routerLinkActive="bg-surface-alt text-ink"
+                class="flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm text-ink-muted transition-colors hover:bg-surface-alt"
+            >
+                <app-icon name="chat" />
+                <span class="hidden sm:inline">Conversas</span>
+                @if (unread() > 0) {
+                    <span
+                        class="rounded-full bg-brand px-1.5 py-0.5 text-[0.65rem] font-bold text-brand-ink"
+                    >
+                        {{ unread() }}
+                    </span>
+                }
+            </a>
+        </nav>
+        <div class="ml-auto flex items-center gap-3">
+            @if (connection() !== 'online') {
+                <span class="flex items-center gap-1.5 text-xs text-ink-muted" role="status">
+                    <span class="size-2 animate-pulse rounded-full bg-warning"></span>
+                    <span class="hidden sm:inline">
+                        {{ connection() === 'connecting' ? 'Reconectando' : 'Sem tempo real' }}
+                    </span>
+                </span>
+            }
+            @if (user(); as me) {
+                <div class="relative">
+                    <button
+                        type="button"
+                        (click)="toggleMenu()"
+                        [attr.aria-expanded]="menuOpen()"
+                        class="flex items-center gap-2 rounded-lg p-1 transition-colors hover:bg-surface-alt focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+                    >
+                        <app-avatar [user]="me" size="sm" />
+                        <span class="hidden max-w-32 truncate text-sm font-medium sm:inline">
+                            {{ me.displayName }}
+                        </span>
+                    </button>
+                    @if (menuOpen()) {
+                        <button
+                            type="button"
+                            class="fixed inset-0 z-10 cursor-default"
+                            aria-label="Fechar menu"
+                            (click)="closeMenu()"
+                        ></button>
+                        <div
+                            class="absolute right-0 z-20 mt-2 w-56 overflow-hidden rounded-xl border border-border bg-surface-alt shadow-lg"
+                        >
+                            <div class="border-b border-border px-4 py-3">
+                                <p class="truncate text-sm font-medium">{{ me.displayName }}</p>
+                                <p class="truncate text-xs text-ink-muted">
+                                    &#64;{{ me.username }}
+                                </p>
+                            </div>
+                            <a
+                                routerLink="/status"
+                                (click)="closeMenu()"
+                                class="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm transition-colors hover:bg-surface"
+                            >
+                                <app-icon name="refresh" />
+                                Status da API
+                            </a>
+                            <button
+                                type="button"
+                                (click)="logout()"
+                                class="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-danger transition-colors hover:bg-surface"
+                            >
+                                <app-icon name="logout" />
+                                Sair da conta
+                            </button>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </header>
+    <main class="min-h-0 flex-1 overflow-y-auto">
+        <ng-content />
+    </main>
+    <app-call-overlay />
+</div>

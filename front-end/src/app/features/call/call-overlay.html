@@ -1,0 +1,136 @@
+@if (status() === 'ringing' && peer(); as caller) {
+    <div
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-6 backdrop-blur-sm"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="chamada-recebida"
+    >
+        <div
+            cdkTrapFocus
+            [cdkTrapFocusAutoCapture]="true"
+            class="w-full max-w-sm rounded-2xl border border-border bg-surface p-8 text-center"
+        >
+            <app-avatar [user]="caller" size="lg" class="mx-auto" />
+            <p id="chamada-recebida" class="mt-4 text-lg font-semibold">
+                {{ caller.displayName }}
+            </p>
+            <p class="mt-1 text-sm text-ink-muted">
+                {{ media() === 'video' ? 'Chamada de vídeo' : 'Chamada de voz' }}
+            </p>
+            <div class="mt-8 flex items-center justify-center gap-6">
+                <button
+                    type="button"
+                    (click)="decline()"
+                    class="flex size-14 items-center justify-center rounded-full bg-danger text-xl text-white transition-transform hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-danger"
+                    aria-label="Recusar chamada"
+                >
+                    <app-icon name="phone-off" />
+                </button>
+                <button
+                    type="button"
+                    (click)="accept()"
+                    class="flex size-14 animate-pulse items-center justify-center rounded-full bg-success text-xl text-white transition-transform hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-success"
+                    aria-label="Atender chamada"
+                >
+                    <app-icon name="phone" />
+                </button>
+            </div>
+        </div>
+    </div>
+}
+@if (status() === 'dialing' || status() === 'connecting' || status() === 'active') {
+    <div
+        cdkTrapFocus
+        class="fixed inset-0 z-50 flex flex-col bg-ink"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Chamada em andamento"
+    >
+        <div class="relative min-h-0 flex-1">
+            @if (media() === 'video') {
+                <video
+                    [appSrcObject]="remote()"
+                    autoplay
+                    playsinline
+                    class="size-full bg-black object-cover"
+                ></video>
+                <video
+                    [appSrcObject]="local()"
+                    autoplay
+                    playsinline
+                    muted
+                    class="absolute right-4 bottom-4 aspect-video w-32 rounded-xl border border-white/20 bg-black object-cover shadow-lg sm:w-56"
+                ></video>
+            } @else {
+                <video [appSrcObject]="remote()" autoplay playsinline class="hidden"></video>
+                <div class="flex size-full flex-col items-center justify-center gap-4">
+                    @if (peer(); as other) {
+                        <app-avatar [user]="other" size="lg" />
+                        <p class="text-xl font-semibold text-surface">{{ other.displayName }}</p>
+                    }
+                </div>
+            }
+            <p
+                class="absolute top-4 left-1/2 -translate-x-1/2 rounded-full bg-black/50 px-4 py-1.5 text-sm font-medium text-white tabular-nums"
+                role="status"
+            >
+                {{ headline() }}
+            </p>
+        </div>
+        <div class="flex shrink-0 items-center justify-center gap-4 bg-black/40 px-6 py-6">
+            <button
+                type="button"
+                (click)="toggleMic()"
+                [class]="
+                    'flex size-12 items-center justify-center rounded-full text-lg transition-colors ' +
+                    (micOn() ? 'bg-white/15 text-white hover:bg-white/25' : 'bg-white text-ink')
+                "
+                [attr.aria-pressed]="!micOn()"
+                [attr.aria-label]="micOn() ? 'Desligar microfone' : 'Ligar microfone'"
+            >
+                <app-icon [name]="micOn() ? 'mic' : 'mic-off'" />
+            </button>
+            @if (media() === 'video') {
+                <button
+                    type="button"
+                    (click)="toggleCamera()"
+                    [class]="
+                        'flex size-12 items-center justify-center rounded-full text-lg transition-colors ' +
+                        (cameraOn()
+                            ? 'bg-white/15 text-white hover:bg-white/25'
+                            : 'bg-white text-ink')
+                    "
+                    [attr.aria-pressed]="!cameraOn()"
+                    [attr.aria-label]="cameraOn() ? 'Desligar câmera' : 'Ligar câmera'"
+                >
+                    <app-icon [name]="cameraOn() ? 'camera' : 'camera-off'" />
+                </button>
+            }
+            <button
+                type="button"
+                (click)="hangup()"
+                class="flex size-12 items-center justify-center rounded-full bg-danger text-lg text-white transition-transform hover:scale-105"
+                aria-label="Encerrar chamada"
+            >
+                <app-icon name="phone-off" />
+            </button>
+        </div>
+    </div>
+}
+@if (status() === 'ended') {
+    <div
+        class="fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 rounded-xl border border-border bg-surface-alt px-4 py-3 shadow-lg"
+        role="status"
+    >
+        <app-icon name="phone-off" class="text-ink-muted" />
+        <p class="text-sm">{{ error() ?? endedLabel() }}</p>
+        <button
+            type="button"
+            (click)="dismiss()"
+            class="rounded-lg p-1 text-ink-muted transition-colors hover:bg-surface"
+            aria-label="Fechar aviso"
+        >
+            <app-icon name="x" />
+        </button>
+    </div>
+}

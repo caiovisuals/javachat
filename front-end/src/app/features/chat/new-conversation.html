@@ -1,0 +1,90 @@
+<div
+    class="fixed inset-0 z-40 flex items-start justify-center bg-black/40 p-4 pt-20 backdrop-blur-sm"
+>
+    <button
+        type="button"
+        class="absolute inset-0 cursor-default"
+        aria-label="Fechar busca"
+        (click)="close()"
+    ></button>
+    <section
+        cdkTrapFocus
+        [cdkTrapFocusAutoCapture]="true"
+        (keydown.escape)="close()"
+        class="relative w-full max-w-md overflow-hidden rounded-2xl border border-border bg-surface shadow-xl"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="nova-conversa"
+    >
+        <header class="flex items-center gap-3 border-b border-border px-4 py-3">
+            <h2 id="nova-conversa" class="flex-1 text-sm font-semibold">Nova conversa</h2>
+            <button
+                type="button"
+                (click)="close()"
+                class="rounded-lg p-1.5 text-ink-muted transition-colors hover:bg-surface-alt"
+                aria-label="Fechar"
+            >
+                <app-icon name="x" />
+            </button>
+        </header>
+        <div class="p-4">
+            <label for="busca" class="sr-only">Buscar pessoas</label>
+            <div class="relative">
+                <span
+                    class="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-ink-muted"
+                >
+                    <app-icon name="search" />
+                </span>
+                <input
+                    id="busca"
+                    type="search"
+                    [value]="query()"
+                    (input)="search($event)"
+                    placeholder="Nome ou nome de usuário"
+                    autocomplete="off"
+                    class="field pl-10"
+                />
+            </div>
+            @if (failure(); as erro) {
+                <p class="alert-error mt-4" role="alert">{{ erro }}</p>
+            }
+        </div>
+        <div class="max-h-80 overflow-y-auto px-2 pb-2">
+            @if (searching()) {
+                <div class="flex justify-center py-8 text-ink-muted">
+                    <app-spinner label="Buscando" />
+                </div>
+            } @else {
+                @for (user of results(); track user.id) {
+                    <button
+                        type="button"
+                        (click)="start(user)"
+                        [disabled]="!!opening()"
+                        class="flex w-full items-center gap-3 rounded-xl px-2 py-2.5 text-left transition-colors hover:bg-surface-alt disabled:opacity-50"
+                    >
+                        <app-avatar [user]="user" size="sm" />
+                        <span class="min-w-0 flex-1">
+                            <span class="block truncate text-sm font-medium">
+                                {{ user.displayName }}
+                            </span>
+                            <span class="block truncate text-xs text-ink-muted">
+                                &#64;{{ user.username }}
+                            </span>
+                        </span>
+                        @if (opening() === user.id) {
+                            <app-spinner label="Abrindo conversa" />
+                        }
+                    </button>
+                } @empty {
+                    <p class="px-2 py-8 text-center text-sm text-ink-muted">
+                        @if (query().trim().length >= 2) {
+                            Ninguém encontrado com esse nome.
+                        } @else {
+                            Digite pelo menos duas letras para buscar.
+                        }
+                    </p>
+                }
+            }
+        </div>
+    </section>
+</div>

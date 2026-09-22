@@ -1,0 +1,137 @@
+<section class="flex h-full min-h-0 flex-col">
+    <header class="flex shrink-0 items-center gap-3 border-b border-border px-4 py-3">
+        <a
+            routerLink="/chats"
+            class="rounded-lg p-2 text-ink-muted transition-colors hover:bg-surface-alt md:hidden"
+            aria-label="Voltar para as conversas"
+        >
+            <app-icon name="back" />
+        </a>
+        @if (peer(); as other) {
+            <app-avatar [user]="other" size="sm" [online]="peerOnline()" [showPresence]="true" />
+        }
+        <div class="min-w-0 flex-1">
+            <p class="truncate text-sm font-semibold">{{ title() }}</p>
+            @if (typingLabel()) {
+                <p class="truncate text-xs text-brand" role="status">{{ typingLabel() }}</p>
+            } @else if (peer()) {
+                <p class="truncate text-xs text-ink-muted">
+                    {{ peerOnline() ? 'Online' : 'Offline' }}
+                </p>
+            }
+        </div>
+        <button
+            type="button"
+            (click)="startCall('audio')"
+            [disabled]="!canCall()"
+            class="rounded-lg p-2 text-ink-muted transition-colors hover:bg-surface-alt disabled:opacity-40"
+            aria-label="Chamada de voz"
+        >
+            <app-icon name="phone" />
+        </button>
+        <button
+            type="button"
+            (click)="startCall('video')"
+            [disabled]="!canCall()"
+            class="rounded-lg p-2 text-ink-muted transition-colors hover:bg-surface-alt disabled:opacity-40"
+            aria-label="Chamada de vídeo"
+        >
+            <app-icon name="camera" />
+        </button>
+    </header>
+    <div #scroller (scroll)="onScroll()" class="min-h-0 flex-1 overflow-y-auto px-4 py-4">
+        @if (hasOlder()) {
+            <div class="mb-4 flex justify-center">
+                <button
+                    type="button"
+                    (click)="loadOlder()"
+                    [disabled]="loading()"
+                    class="rounded-full border border-border px-4 py-1.5 text-xs text-ink-muted transition-colors hover:bg-surface-alt disabled:opacity-50"
+                >
+                    Carregar mensagens anteriores
+                </button>
+            </div>
+        }
+        @if (loading() && messages().length === 0) {
+            <div class="flex justify-center py-10 text-ink-muted">
+                <app-spinner [large]="true" label="Carregando conversa" />
+            </div>
+        }
+        @if (failed()) {
+            <p class="alert-error mx-auto max-w-sm text-center" role="alert">
+                Não foi possível carregar esta conversa.
+            </p>
+        }
+        @for (message of messages(); track trackMessage($index, message); let i = $index) {
+            <div class="flex gap-2" [class.justify-end]="mine(message)" [class.mt-4]="!grouped(i)">
+                @if (!mine(message) && !grouped(i)) {
+                    <app-avatar [user]="message.author" size="sm" />
+                } @else if (!mine(message)) {
+                    <span class="size-9 shrink-0" aria-hidden="true"></span>
+                }
+                <div class="max-w-[min(32rem,75%)]">
+                    @if (!mine(message) && !grouped(i)) {
+                        <p class="mb-1 text-xs font-medium text-ink-muted">
+                            {{ message.author.displayName }}
+                        </p>
+                    }
+                    <div
+                        [class]="
+                            'rounded-bubble px-3.5 py-2 text-sm break-words whitespace-pre-wrap ' +
+                            (mine(message) ? 'bg-brand text-brand-ink' : 'bg-surface-alt text-ink')
+                        "
+                        [class.opacity-60]="message.delivery === 'sending'"
+                    >
+                        {{ message.content }}
+                    </div>
+                    <p
+                        class="mt-1 flex items-center gap-1.5 text-[0.7rem] text-ink-muted"
+                        [class.justify-end]="mine(message)"
+                    >
+                        <span>{{ message.createdAt | relativeTime }}</span>
+
+                        @if (message.delivery === 'sending') {
+                            <span>· enviando</span>
+                        } @else if (message.delivery === 'failed') {
+                            <button
+                                type="button"
+                                (click)="retry(message)"
+                                class="font-medium text-danger underline underline-offset-2"
+                            >
+                                não enviada · tentar de novo
+                            </button>
+                        }
+                    </p>
+                </div>
+            </div>
+        } @empty {
+            @if (!loading() && !failed()) {
+                <p class="py-16 text-center text-sm text-ink-muted">
+                    Nenhuma mensagem ainda. Diga oi.
+                </p>
+            }
+        }
+    </div>
+    <form (submit)="submit($event)" class="shrink-0 border-t border-border p-3">
+        <div class="flex items-end gap-2">
+            <label for="mensagem" class="sr-only">Mensagem</label>
+            <textarea
+                id="mensagem"
+                rows="1"
+                [value]="draft()"
+                (input)="onDraft($event)"
+                (keydown.enter)="submit($event)"
+                placeholder="Escreva uma mensagem"
+                class="field max-h-40 flex-1 resize-none"
+            ></textarea>
+            <button
+                type="submit"
+                [disabled]="!draft().trim()"
+                class="flex size-11 shrink-0 items-center justify-center rounded-lg bg-brand text-lg text-brand-ink transition-colors hover:bg-brand-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:cursor-not-allowed disabled:opacity-50"
+                aria-label="Enviar mensagem"
+            >
+                <app-icon name="send" />
+            </button>
+        </div>
+    </form>
+</section>

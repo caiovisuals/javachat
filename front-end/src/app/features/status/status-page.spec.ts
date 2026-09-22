@@ -21,9 +21,7 @@ describe('StatusPage', () => {
     it('mostra a identificação da API quando ela responde', async () => {
         const fixture = TestBed.createComponent(StatusPage)
 
-        http
-        .expectOne((req) => req.url.endsWith('/api/health'))
-        .flush({
+        http.expectOne((req) => req.url.endsWith('/api/health')).flush({
             status: 'UP',
             application: 'javachat',
             version: '0.1.0-SNAPSHOT',
@@ -39,9 +37,10 @@ describe('StatusPage', () => {
     it('orienta o desenvolvedor quando a API não responde', async () => {
         const fixture = TestBed.createComponent(StatusPage)
 
-        http
-        .expectOne((req) => req.url.endsWith('/api/health'))
-        .error(new ProgressEvent('error'), { status: 0, statusText: 'offline' })
+        http.expectOne((req) => req.url.endsWith('/api/health')).error(new ProgressEvent('error'), {
+            status: 0,
+            statusText: 'offline',
+        })
         await fixture.whenStable()
 
         const text = (fixture.nativeElement as HTMLElement).textContent ?? ''

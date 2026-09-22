@@ -6,8 +6,7 @@ import { ApiHealth, HealthService } from '../../core/health/health-service'
 type ConnectionState = 'checking' | 'online' | 'offline'
 
 /**
- * Página temporária da Fase 0: existe para provar que o front-end fala com o back-end.
- * Sai do ar quando a tela de login entrar (Fase 1).
+ * Página temporária da Fase 0: existe para provar que o front-end fala com o back-end
  */
 @Component({
     selector: 'app-status-page',
