@@ -1,0 +1,163 @@
+<app-shell>
+    <div class="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6">
+        <header class="flex flex-wrap items-end gap-4">
+            <div class="min-w-0 flex-1">
+                <h1 class="text-2xl font-bold tracking-tight">{{ headline() }}</h1>
+                <p class="mt-1 text-sm text-ink-muted">
+                    @if (unread() > 0) {
+                        Você tem {{ unread() }}
+                        {{ unread() === 1 ? 'mensagem não lida' : 'mensagens não lidas' }}.
+                    } @else {
+                        Tudo em dia por aqui.
+                    }
+                </p>
+            </div>
+            <button
+                type="button"
+                (click)="searchOpen.set(true)"
+                class="inline-flex items-center gap-2 rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-brand-ink transition-colors hover:bg-brand-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+            >
+                <app-icon name="plus" />
+                Nova conversa
+            </button>
+        </header>
+        <dl class="mt-8 grid grid-cols-3 gap-3">
+            <div class="rounded-xl border border-border bg-surface-alt p-4">
+                <dt class="text-xs text-ink-muted">Conversas</dt>
+                <dd class="mt-1 text-2xl font-semibold tabular-nums">{{ total() }}</dd>
+            </div>
+            <div class="rounded-xl border border-border bg-surface-alt p-4">
+                <dt class="text-xs text-ink-muted">Não lidas</dt>
+                <dd class="mt-1 text-2xl font-semibold tabular-nums">{{ unread() }}</dd>
+            </div>
+            <div class="rounded-xl border border-border bg-surface-alt p-4">
+                <dt class="text-xs text-ink-muted">Online agora</dt>
+                <dd class="mt-1 text-2xl font-semibold tabular-nums">{{ online().length }}</dd>
+            </div>
+        </dl>
+        @if (online().length > 0) {
+            <section class="mt-8" aria-labelledby="online-titulo">
+                <h2 id="online-titulo" class="text-sm font-semibold">Online agora</h2>
+                <ul class="mt-3 flex gap-4 overflow-x-auto pb-1">
+                    @for (contact of online(); track contact.user.id) {
+                        <li class="shrink-0">
+                            <a
+                                [routerLink]="['/c', contact.conversationId]"
+                                class="flex w-16 flex-col items-center gap-1.5 rounded-xl p-1 text-center transition-colors hover:bg-surface-alt"
+                            >
+                                <app-avatar
+                                    [user]="contact.user"
+                                    size="md"
+                                    [online]="true"
+                                    [showPresence]="true"
+                                />
+                                <span class="w-full truncate text-xs">
+                                    {{ contact.user.displayName }}
+                                </span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </section>
+        }
+        <section class="mt-8" aria-labelledby="recentes-titulo">
+            <div class="flex items-baseline gap-2">
+                <h2 id="recentes-titulo" class="flex-1 text-sm font-semibold">
+                    Conversas recentes
+                </h2>
+                @if (total() > 0) {
+                    <a routerLink="/chats" class="link text-sm">Ver todas</a>
+                }
+            </div>
+            <div class="mt-3 rounded-xl border border-border">
+                @switch (status()) {
+                    @case ('loading') {
+                        <div class="flex justify-center py-10 text-ink-muted">
+                            <app-spinner [large]="true" label="Carregando conversas" />
+                        </div>
+                    }
+                    @case ('failed') {
+                        <div class="px-4 py-8 text-center">
+                            <p class="alert-error" role="alert">
+                                Não foi possível carregar suas conversas.
+                            </p>
+                            <button
+                                type="button"
+                                (click)="retry()"
+                                class="mt-4 inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm transition-colors hover:bg-surface-alt"
+                            >
+                                <app-icon name="refresh" />
+                                Tentar de novo
+                            </button>
+                        </div>
+                    }
+                    @default {
+                        <ul class="divide-y divide-border">
+                            @for (conversation of recent(); track conversation.id) {
+                                <li>
+                                    <a
+                                        [routerLink]="['/c', conversation.id]"
+                                        class="flex items-center gap-3 px-3 py-3 transition-colors hover:bg-surface-alt"
+                                    >
+                                        @if (peerOf(conversation); as peer) {
+                                            <app-avatar [user]="peer" size="md" />
+                                        } @else {
+                                            <span
+                                                class="flex size-11 shrink-0 items-center justify-center rounded-full bg-surface-alt text-ink-muted"
+                                            >
+                                                <app-icon name="users" />
+                                            </span>
+                                        }
+                                        <span class="min-w-0 flex-1">
+                                            <span class="flex items-baseline gap-2">
+                                                <span
+                                                    class="min-w-0 flex-1 truncate text-sm font-medium"
+                                                >
+                                                    {{ titleOf(conversation) }}
+                                                </span>
+                                                <span class="shrink-0 text-[0.7rem] text-ink-muted">
+                                                    {{ conversation.updatedAt | relativeTime }}
+                                                </span>
+                                            </span>
+                                            <span class="mt-0.5 flex items-center gap-2">
+                                                <span
+                                                    class="min-w-0 flex-1 truncate text-xs"
+                                                    [class.font-medium]="
+                                                        conversation.unreadCount > 0
+                                                    "
+                                                    [class.text-ink-muted]="
+                                                        conversation.unreadCount === 0
+                                                    "
+                                                >
+                                                    {{ preview(conversation) }}
+                                                </span>
+                                                @if (conversation.unreadCount > 0) {
+                                                    <span
+                                                        class="shrink-0 rounded-full bg-brand px-1.5 py-0.5 text-[0.65rem] font-bold text-brand-ink"
+                                                    >
+                                                        {{ conversation.unreadCount }}
+                                                    </span>
+                                                }
+                                            </span>
+                                        </span>
+                                    </a>
+                                </li>
+                            } @empty {
+                                <li>
+                                    <app-empty-state
+                                        icon="chat"
+                                        title="Nenhuma conversa ainda"
+                                        description="Busque alguém pelo nome ou usuário para começar."
+                                    />
+                                </li>
+                            }
+                        </ul>
+                    }
+                }
+            </div>
+        </section>
+    </div>
+    @if (searchOpen()) {
+        <app-new-conversation (closed)="searchOpen.set(false)" />
+    }
+</app-shell>

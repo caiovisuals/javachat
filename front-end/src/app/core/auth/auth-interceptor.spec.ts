@@ -24,7 +24,7 @@ describe('authInterceptor', () => {
             providers: [
                 provideHttpClient(withInterceptors([authInterceptor])),
                 provideHttpClientTesting(),
-                provideRouter([]),
+                provideRouter([{ path: 'entrar', children: [] }]),
             ],
         })
 

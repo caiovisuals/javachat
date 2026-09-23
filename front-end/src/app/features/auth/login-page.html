@@ -1,1 +1,70 @@
-<div></div>
+<main class="flex min-h-dvh items-center justify-center p-6">
+    <section class="card w-full max-w-sm">
+        <header class="mb-6">
+            <p class="text-sm font-bold tracking-tight text-brand">JAVACHAT</p>
+            <h1 class="mt-2 text-2xl font-bold tracking-tight">Entrar</h1>
+            <p class="mt-1.5 text-sm text-ink-muted">Continue de onde parou nas suas conversas.</p>
+        </header>
+        @if (failure(); as erro) {
+            <p class="alert-error mb-5" role="alert">{{ erro }}</p>
+        }
+        <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="space-y-4">
+            <div>
+                <label for="login" class="label">E-mail ou nome de usuário</label>
+                <input
+                    id="login"
+                    type="text"
+                    formControlName="login"
+                    autocomplete="username"
+                    autocapitalize="none"
+                    spellcheck="false"
+                    class="field"
+                    [class.field-error]="invalid('login')"
+                    [attr.aria-invalid]="invalid('login')"
+                    [attr.aria-describedby]="invalid('login') ? 'login-erro' : null"
+                />
+                @if (invalid('login')) {
+                    <span id="login-erro" class="hint-error">Informe seu e-mail ou usuário.</span>
+                }
+            </div>
+            <div>
+                <label for="password" class="label">Senha</label>
+                <input
+                    id="password"
+                    type="password"
+                    formControlName="password"
+                    autocomplete="current-password"
+                    class="field"
+                    [class.field-error]="invalid('password')"
+                    [attr.aria-invalid]="invalid('password')"
+                    [attr.aria-describedby]="invalid('password') ? 'password-erro' : null"
+                />
+                @if (invalid('password')) {
+                    <span id="password-erro" class="hint-error">Informe sua senha.</span>
+                }
+            </div>
+            <button
+                type="submit"
+                [disabled]="submitting()"
+                class="btn-primary flex items-center justify-center gap-2"
+            >
+                @if (submitting()) {
+                    <app-spinner label="Entrando" />
+                    Entrando
+                } @else {
+                    Entrar
+                }
+            </button>
+        </form>
+        <p class="mt-6 text-center text-sm text-ink-muted">
+            Ainda não tem conta?
+            <a
+                routerLink="/criar-conta"
+                [queryParams]="destino() ? { destino: destino() } : {}"
+                class="link"
+            >
+                Criar conta
+            </a>
+        </p>
+    </section>
+</main>
